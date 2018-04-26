@@ -6,14 +6,14 @@ Date: April 2018
 
 https://github.com/srivera1/RAW_LoRa_IoT_bridge
 
-Hardware (3.3V)
+**Hardware (3.3V)**
 
  -STM32 board (Blue pill)
 
  -Lora module (RF96)
 
 
-Hardware Connections
+**Hardware Connections**
 
  -5V input power from USB (from power bank)
  
