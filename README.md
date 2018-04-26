@@ -1,12 +1,17 @@
 # RAW_LoRa_IoT_bridge
 ## IoT raw Lora bridge: Take and send readings from sensors
 By: Sergio Rivera Lavado
+
 Date: April 2018
+
 https://github.com/srivera1/RAW_LoRa_IoT_bridge
 
 Hardware (3.3V):
--STM32 board (Blue pill)
--Lora module (RF96)
+
+ -STM32 board (Blue pill)
+
+ -Lora module (RF96)
+
 #
 Hardware Connections
 #
