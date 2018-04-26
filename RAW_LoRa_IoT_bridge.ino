@@ -100,20 +100,20 @@ void onReceive(int packetSize) {
 
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != clientAddress) {
-    Serial.println("This message is not for me.");
+   // Serial.println("This message is not for me.");
     return;                             // skip rest of function
   }
 
   // if message is for this device, or broadcast, print details:
-  Serial.println("Received from: 0x" + String(sender, HEX));
+  /*Serial.println("Received from: 0x" + String(sender, HEX));
   Serial.println("Sent to: 0x" + String(recipient, HEX));
   Serial.println("Message ID: " + String(incomingMsgId));
   Serial.println("Message length: " + String(incomingLength));
   Serial.println("Message: " + incoming);
   Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr()));
-  Serial.println(finalMsg);
-  Serial.println();
+  Serial.println("Snr: " + String(LoRa.packetSnr())); */
+  Serial.println(finalMsg + ',' + String(LoRa.packetRssi()) + ',' + String(LoRa.packetSnr()) );
+  //Serial.println();
 }
 
 // Error correction, "best 2 out of 3"
