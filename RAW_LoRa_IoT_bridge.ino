@@ -80,39 +80,39 @@ void onReceive(int packetSize) {
 
   }
 
-  int incomingSize = 0;
-  int i;
-  for (i = 0; i < incoming.length(); i++) {
+  int separator[] = {0, 0, 0};
+  int k = 0;
+  for (int i = 0; i < incoming.length(); i++) {
     if (incoming[i] == ';') {
-      incomingSize = incoming.substring( 0 , i ).toInt();
-      break;
+      separator[k++] = i;
     }
   }
+  int  incomingSize = incoming.substring( 0 , separator[0] ).toInt();
   String finalMsg = "";
-  for (int j = i + 1; j < incomingSize + 2; j ++ ) {
-
-    char finalVal = twoBestFromThree(incoming [j],
-                                     incoming [j + incomingSize],
-                                     incoming [j + 2 * incomingSize]);
+  for (int j = separator[0] - 1; j < incomingSize; j ++ ) {
+    char finalVal = twoBestFromThree(incoming [j + separator[0]],
+                                     incoming [j + separator[1]],
+                                     incoming [j + separator[2]]);
     finalMsg += finalVal;
 
   }
-
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != clientAddress) {
-   // Serial.println("This message is not for me.");
+    // Serial.println("This message is not for me.");
     return;                             // skip rest of function
   }
 
   // if message is for this device, or broadcast, print details:
   /*Serial.println("Received from: 0x" + String(sender, HEX));
-  Serial.println("Sent to: 0x" + String(recipient, HEX));
-  Serial.println("Message ID: " + String(incomingMsgId));
-  Serial.println("Message length: " + String(incomingLength));
-  Serial.println("Message: " + incoming);
-  Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr())); */
-  Serial.println(finalMsg + ',' + String(LoRa.packetRssi()) + ',' + String(LoRa.packetSnr()) );
+    Serial.println("Sent to: 0x" + String(recipient, HEX));
+    Serial.println("Message ID: " + String(incomingMsgId));
+    Serial.println("Message length: " + String(incomingLength));
+    Serial.println("Message: " + incoming);
+    Serial.println("RSSI: " + String(LoRa.packetRssi()));
+    Serial.println("Snr: " + String(LoRa.packetSnr())); */
+  if (k == 4) {
+    Serial.println(finalMsg + ',' + String(LoRa.packetRssi()) + ',' + String(LoRa.packetSnr()) );
+  }
   //Serial.println();
 }
 
@@ -128,12 +128,8 @@ byte twoBestFromThree (byte x, byte y, byte z) {
                     (x & (1 << bit)) == (z & (1 << bit)) ? (x & (1 << bit)) :
                     (y & (1 << bit));
   }
-
   return byte(BoolArrayToByte(arraybol));
-
 }
-
-
 
 byte BoolArrayToByte(bool boolArray[8])
 {
@@ -146,8 +142,5 @@ byte BoolArrayToByte(bool boolArray[8])
       result = result | (1 << i);
     }
   }
-
   return result;
 }
-
-
