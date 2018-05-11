@@ -49,11 +49,69 @@ void setup() {
   }
 
   /**/
-  //Supported values are `7.8E3`, `10.4E3`, `15.6E3`, `20.8E3`, `31.25E3`, `41.7E3`, `62.5E3`, `125E3`, and `250E3`.
-  LoRa.setSignalBandwidth(62.5E3);
-  LoRa.setSpreadingFactor(7);       // ranges from 6-12,default 7 see API docs
+  // TODO: implement more modes
+  int Mode = 0;
+  if (Mode == 0) { // 43 bps
+    LoRa.setSignalBandwidth(20.8E3);
+  LoRa.setSpreadingFactor(11);           // ranges from 6-12,default 7 see API docs
   LoRa.setCodingRate4(8);
   LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 1) { // 1476 bps
+  LoRa.setSignalBandwidth(20.8E3);
+  LoRa.setSpreadingFactor(6);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 2) { // 915 bps
+  LoRa.setSignalBandwidth(62.5E3);
+  LoRa.setSpreadingFactor(8);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(8);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 3) { // 8509 bps
+  LoRa.setSignalBandwidth(250.0E3);
+  LoRa.setSpreadingFactor(7);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5); // check this value
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 4) { // 17738 bps
+  LoRa.setSignalBandwidth(250.0E3);
+  LoRa.setSpreadingFactor(6);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 5) { // 104 bps
+  LoRa.setSignalBandwidth(41.7E3);
+  LoRa.setSpreadingFactor(11);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(8);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 6) { // 2959 bps
+  LoRa.setSignalBandwidth(41.7E3);
+  LoRa.setSpreadingFactor(6);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 7) { // 841 bps
+  LoRa.setSignalBandwidth(20.8E3);
+  LoRa.setSpreadingFactor(7);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 8) { // 4435 bps
+  LoRa.setSignalBandwidth(62.5E3);
+  LoRa.setSpreadingFactor(6);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
+  else if (Mode == 9) {
+  // not supported
+  LoRa.setSignalBandwidth(500.0E3);
+  LoRa.setSpreadingFactor(6);           // ranges from 6-12,default 7 see API docs
+  LoRa.setCodingRate4(5);
+  LoRa.setPreambleLength(17);
+  }
   /**/
 
   Serial.println("LoRa init succeeded.");
@@ -80,40 +138,40 @@ void onReceive(int packetSize) {
 
   }
 
-  int incomingSize = 0;
-  int i;
-  for (i = 0; i < incoming.length(); i++) {
+  int separator[] = {0, 0, 0};
+  int k = 0;
+  for (int i = 0; i < incoming.length(); i++) {
     if (incoming[i] == ';') {
-      incomingSize = incoming.substring( 0 , i ).toInt();
-      break;
+      separator[k++] = i;
     }
   }
+  int  incomingSize = incoming.substring( 0 , separator[0] ).toInt();
   String finalMsg = "";
-  for (int j = i + 1; j < incomingSize + 2; j ++ ) {
-
-    char finalVal = twoBestFromThree(incoming [j],
-                                     incoming [j + incomingSize],
-                                     incoming [j + 2 * incomingSize]);
+  for (int j = separator[0] - 1; j < incomingSize; j ++ ) {
+    char finalVal = twoBestFromThree(incoming [j + separator[0]],
+                                     incoming [j + separator[1]],
+                                     incoming [j + separator[2]]);
     finalMsg += finalVal;
 
   }
-
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != clientAddress) {
-    Serial.println("This message is not for me.");
+    // Serial.println("This message is not for me.");
     return;                             // skip rest of function
   }
 
   // if message is for this device, or broadcast, print details:
-  Serial.println("Received from: 0x" + String(sender, HEX));
-  Serial.println("Sent to: 0x" + String(recipient, HEX));
-  Serial.println("Message ID: " + String(incomingMsgId));
-  Serial.println("Message length: " + String(incomingLength));
-  Serial.println("Message: " + incoming);
-  Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr()));
-  Serial.println(finalMsg);
-  Serial.println();
+  /*Serial.println("Received from: 0x" + String(sender, HEX));
+    Serial.println("Sent to: 0x" + String(recipient, HEX));
+    Serial.println("Message ID: " + String(incomingMsgId));
+    Serial.println("Message length: " + String(incomingLength));
+    Serial.println("Message: " + incoming);
+    Serial.println("RSSI: " + String(LoRa.packetRssi()));
+    Serial.println("Snr: " + String(LoRa.packetSnr())); */
+  if (k == 4) {
+    Serial.println(finalMsg + ',' + String(LoRa.packetRssi()) + ',' + String(LoRa.packetSnr()) );
+  }
+  //Serial.println();
 }
 
 // Error correction, "best 2 out of 3"
@@ -128,12 +186,8 @@ byte twoBestFromThree (byte x, byte y, byte z) {
                     (x & (1 << bit)) == (z & (1 << bit)) ? (x & (1 << bit)) :
                     (y & (1 << bit));
   }
-
   return byte(BoolArrayToByte(arraybol));
-
 }
-
-
 
 byte BoolArrayToByte(bool boolArray[8])
 {
@@ -146,8 +200,5 @@ byte BoolArrayToByte(bool boolArray[8])
       result = result | (1 << i);
     }
   }
-
   return result;
 }
-
-
